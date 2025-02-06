@@ -61,7 +61,11 @@
     h4{
         font-family: Algerian;
     }
-    
+    {% comment %} .divFormulaire{
+        display: flex;
+        justify-content : center;
+        items-align: center;
+    } {% endcomment %}
     </style>
 </head>
 <body>
@@ -69,11 +73,14 @@
     
     <div class = " divFormulaire" style = "margin-top: 10px; display: flex!important; justify-content: center!important;">  
         <div class="bloc-form">
-            <marquee><h4> Formulaire d'ajout categorie </h4></marquee>
-            <form action="{% url 'ajoutCateg' %}" method="POST" enctype="multipart/form-data" class="formulaire">
+            <marquee><h4> Formulaire d'ajout produit </h4></marquee>
+            <form action="{% url 'ajoutProduit' %}" method="POST" enctype="multipart/form-data" class="formulaire">
                 {% csrf_token %}
-                {{ categories.as_p }}
-                <input type="submit" class = "button" value="Submit">
+                {{ produits.as_p }}
+                <div  class = "" style = "display: flex;">
+                    <input type="submit" value="Submit">
+                    <a href ="" role =" button" class = "btn btn-danger" style = "display: block; width : 50%; height : 40px; margin-top: 15px; margin-right : 10px;"> Annuler</a>
+                </div>
             </form>
         <div>
     <div>
@@ -83,4 +90,3 @@
 
 
 
-  

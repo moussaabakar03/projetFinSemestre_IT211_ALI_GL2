@@ -69,10 +69,11 @@
     
     <div class = " divFormulaire" style = "margin-top: 10px; display: flex!important; justify-content: center!important;">  
         <div class="bloc-form">
-            <marquee><h4> Formulaire d'ajout categorie </h4></marquee>
-            <form action="{% url 'ajoutCateg' %}" method="POST" enctype="multipart/form-data" class="formulaire">
+            <marquee><h4> Formulaire Modifier categorie </h4></marquee>
+            <form action="{% url 'modifierCategorie' categorie.id %}" method="POST" enctype="multipart/form-data" class="formulaire">
+
                 {% csrf_token %}
-                {{ categories.as_p }}
+                {{ form.as_p }}
                 <input type="submit" class = "button" value="Submit">
             </form>
         <div>
