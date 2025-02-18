@@ -1,5 +1,5 @@
 from django import forms
-from . models import Categorie
+from . models import Categorie, Produit, PanierClient
 
 class formCategorie(forms.Form):
     nom = forms.CharField(max_length=100, label='Nom de la categorie')
@@ -14,4 +14,21 @@ class formProduit(forms.Form):
     image = forms.ImageField(label ="Image ")
     prix = forms.DecimalField(label ="Prix ", max_digits=10, decimal_places=2)
     quantite = forms.IntegerField(label ="Quantite ")
+
+
+class PannierClient(forms.Form):
+    nomClient = forms.CharField(label= "Nom du client ", max_length= 260, required= False)
     
+
+class formAchat(forms.Form):
+    produit = forms.ModelChoiceField(label= "Produit", queryset=Produit.objects.all())
+    panierDuClient = forms.ModelChoiceField(label= "Numero pannier du client:", queryset=PanierClient.objects.all())
+    quantite = forms.IntegerField()
+    # prixUnitaire = forms.DecimalField(label ="Prix unitaire ", max_digits=10, decimal_places=2)
+    # dateAchat = forms.DateTimeField(auto_now_add=True)
+    modePayement = forms.CharField(max_length=255)
+    # prixTotal = forms.DecimalField(label ="Prix total ", max_digits=10, decimal_places=2)
+
+    
+class formFactureClient(forms.Form):
+    panierDuClient = forms.ModelChoiceField(label= "Identifiant pannier du client:", queryset=PanierClient.objects.all())

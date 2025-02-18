@@ -51,7 +51,7 @@
         border-radius: 6px;
         width: 50%;
         margin-bottom: 15px; 
-        margin-left: 23%;
+        {% comment %} margin-left: 23%; {% endcomment %}
         margin-top: 10px;
         transition : 0.5s;
     }
@@ -74,6 +74,7 @@
                 {% csrf_token %}
                 {{ categories.as_p }}
                 <input type="submit" class = "button" value="Submit">
+                <a type ="button" class = "btn btn-danger" href="{% url 'listeCateg' %}" style = "width: 30%;">Annuler</a>
             </form>
         <div>
     <div>

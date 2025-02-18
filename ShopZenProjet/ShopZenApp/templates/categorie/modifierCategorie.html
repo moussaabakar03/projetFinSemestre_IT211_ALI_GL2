@@ -51,7 +51,7 @@
         border-radius: 6px;
         width: 50%;
         margin-bottom: 15px; 
-        margin-left: 23%;
+        margin-left: 25px;
         margin-top: 10px;
         transition : 0.5s;
     }
@@ -71,10 +71,10 @@
         <div class="bloc-form">
             <marquee><h4> Formulaire Modifier categorie </h4></marquee>
             <form action="{% url 'modifierCategorie' categorie.id %}" method="POST" enctype="multipart/form-data" class="formulaire">
-
                 {% csrf_token %}
                 {{ form.as_p }}
                 <input type="submit" class = "button" value="Submit">
+                <a type ="button" class = "btn btn-danger" href="{% url 'listeCateg' %}" style = "width: 30%;">Annuler</a>
             </form>
         <div>
     <div>

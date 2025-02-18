@@ -20,18 +20,33 @@
             margin-top: 20px;
 
         }
+        .entete{
+            display: flex; 
+            justify-content: space-between; 
+            margin-top: 20px; 
+            margin-left: 20px; 
+            {% comment %} padding-bottom: 30px;  {% endcomment %}
+            margin-bottom:20px;
+            margin-right: 20px; 
+            background-color: #f0f0f0; 
+            padding: 10px; 
+            border-radius: 10px; 
+            opacity: 0.8;
+        }
     </style>
     <body>
-        <div style ="display: flex; justify-content: space-between; margin-top: 20px; margin-left: 20px; margin-right: 20px; background-color: #f0f0f0; padding: 10px; border-radius: 10px; ">
+        
+        <header class = "entete fixed-top">
             <a href="{% url 'listeCateg' %}" type="button" class="btn btn-outline-primary" style = "height: 40px; margin-top: 10px;">DashBord </a>
             <a href="{% url 'ajoutProduit' %}" type="button" class="btn btn-outline-primary" style = "height: 40px; margin-top: 10px;">Ajouter produit</a>
             <h3 style = " text-align: center;"> Liste complete des  <span style ="color: red; font-weight : bold;">produits</span></h3>
-            <form class="d-flex" role="search" style="">
-                <input class="form-control me-2 largeInp" type="search" style = "height: 40px; margin-top: 10px;" placeholder="nom du produit" aria-label="Search">
+            <form class="d-flex" role="search" action ="{% url 'listeProduits' %}" method = "POST">
+                {% csrf_token %}
+                <input class="form-control me-2 largeInp" name = "produit" type="search" style = "height: 40px; margin-top: 10px;" placeholder="nom du produit" aria-label="Search">
                 <button class="btn btn-outline-success search" type="submit" style = "height: 39px; margin-top: 10px;">Rechercher</button>
             </form>
-        </div>
-        <table class="table table-striped table-hover tableau" style="border-radius: 10px;">
+        </header>
+        <table class="table table-striped table-hover tableau" style="border-radius: 10px; margin-top: 100px;">
             <thead>
                 <tr>
                     <th scope="col">ID</th>
@@ -46,27 +61,29 @@
                 
                 
                 </tr>
-                </thead>
-                <tbody> 
+            </thead>
+            <tbody> 
                 
-                    {% for produit in listproduits %}
-                
-                <tr>
-                    <td>{{ produit.id }}</td>
-                    <td>{{ produit.image }}</td>
-                    <td>{{ produit.nom }}</td>
-                    <td>{{ produit.description }}</td>
-                    <td>{{ produit.categorie }}</td>
-                    <td>{{ produit.prix }}</td>
-                    <td>{{ produit.quantite }}</td>
-                    <td>{{ produit.dateAjoutProduit }}</td>
-                    
-                    <td>
-                        <a href = "" type="button" class="btn btn-outline-warning"><i class="fas fa-edit"></i></a>
-                        <a href = "{% url 'supprimerProduit' produit.id %}" type="button" class="btn btn-outline-danger" role = "Button" href = ""  onclick ="return confirm ('Voulez-vous vraiment supprimer ce produit?');" > <i class="fas fa-trash-alt"></i></a>
-                    </td>
-                </tr>
-            {% endfor %}
+                {% for produit in listeProduit %}
+            
+                    <tr>
+                        <td>{{ produit.id }}</td>
+                        <td><a href = "{{ produit.image.url }}"><img src ="{{ produit.image.url }}" alt = "{{produit.nom}}" style = "width : 55px; height : 50px; border-radius: 15px; margin : 10px; object-fit: cover; margin-top: 0px; margin-bottom: 15px;" /></a></td>
+                        <td>{{ produit.nom }}</td>
+                        <td>{{ produit.description }}</td>
+                        <td>{{ produit.categorie }}</td>
+                        <td>{{ produit.prix }}</td>
+                        <td>{{ produit.quantite }}</td>
+                        <td>{{ produit.dateAjoutProduit }}</td>
+                        
+                        <td>
+                            <div style = "display: flex; justify-content: space-between; gap: 10px;" >
+                                <a href = "{% url 'modifierProduit' produit.id %}" type="button" class="btn btn-outline-warning"><i class="fas fa-edit"></i></a>
+                                <a href = "{% url 'supprimerProduit' produit.id %}" type="button" class="btn btn-outline-danger" role = "Button" href = ""  onclick ="return confirm ('Voulez-vous vraiment supprimer ce produit?');" > <i class="fas fa-trash-alt"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
 
             </tbody>
         </table>

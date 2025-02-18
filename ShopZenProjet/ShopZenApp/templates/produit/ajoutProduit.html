@@ -17,55 +17,55 @@
             color: #333;
         }
     
-    .formulaire{
-        padding: auto;
-        background-color:rgb(106, 117, 128) ;
-        border-radius: 5px;
-        width: 100%;
-        margin-bottom : 20px;
-    }
-   
-    label{
-        font-weight: bold;
-        font-size: 17px;
-        display: block;
-        margin-top: 10px;
-        margin-bottom: 6px;
-        color: white;
-        text-align: center;
-    }
-    input, select, textarea{
-        padding: 10px;
-        width: 90%;
-        border: none;
-        height: 100%;
-        border-radius: 5px;
-        margin: 10px;
-    }
-    textarea{
-        height: 100px!important;
-    }
-    .button{
-        background-color: green;
-        border: none;
-        border-radius: 6px;
-        width: 50%;
-        margin-bottom: 15px; 
-        margin-left: 23%;
-        margin-top: 10px;
-        transition : 0.5s;
-    }
-    .button:hover{
-        background-color:rgb(195, 195, 232);
-    }
-    h4{
-        font-family: Algerian;
-    }
-    {% comment %} .divFormulaire{
-        display: flex;
-        justify-content : center;
-        items-align: center;
-    } {% endcomment %}
+        .formulaire{
+            padding: auto;
+            background-color:rgb(106, 117, 128) ;
+            border-radius: 5px;
+            width: 100%;
+            margin-bottom : 20px;
+        }
+    
+        label{
+            font-weight: bold;
+            font-size: 17px;
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 6px;
+            color: white;
+            text-align: center;
+        }
+        input, select, textarea{
+            padding: 10px;
+            width: 90%;
+            border: none;
+            height: 100%;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        textarea{
+            height: 100px!important;
+        }
+        .button{
+            background-color: green;
+            border: none;
+            border-radius: 6px;
+            width: 50%;
+            margin-bottom: 15px; 
+            margin-left: 23%;
+            margin-top: 10px;
+            transition : 0.5s;
+        }
+        .button:hover{
+            background-color:rgb(195, 195, 232);
+        }
+        h4{
+            font-family: Algerian;
+        }
+        {% comment %} .divFormulaire{
+            display: flex;
+            justify-content : center;
+            items-align: center;
+        } {% endcomment %}
     </style>
 </head>
 <body>
@@ -79,7 +79,7 @@
                 {{ produits.as_p }}
                 <div  class = "" style = "display: flex;">
                     <input type="submit" value="Submit">
-                    <a href ="" role =" button" class = "btn btn-danger" style = "display: block; width : 50%; height : 40px; margin-top: 15px; margin-right : 10px;"> Annuler</a>
+                    <a href ="{% url 'listeProduits' %}" role =" button" class = "btn btn-danger" style = "display: block; width : 50%; height : 40px; margin-top: 15px; margin-right : 10px;"> Annuler</a>
                 </div>
             </form>
         <div>
