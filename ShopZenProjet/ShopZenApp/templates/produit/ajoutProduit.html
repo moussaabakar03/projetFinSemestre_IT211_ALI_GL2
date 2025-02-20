@@ -69,7 +69,15 @@
     </style>
 </head>
 <body>
-   
+    {% if messages %}
+        <div class="container mt-4">
+            {% for message in messages %}
+                <div class="alert alert-info alert-custom" role="alert" id="alert" style = "margin-bottom: 0px!important; text-align : center;">
+                    <i class="fas fa-info-circle me-2"></i>{{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     
     <div class = " divFormulaire" style = "margin-top: 10px; display: flex!important; justify-content: center!important;">  
         <div class="bloc-form">
@@ -84,7 +92,21 @@
             </form>
         <div>
     <div>
-    
+        
+    <script>
+        let alert = document.getElementById('alert');
+        if (alert) {
+            setTimeout(function() {
+                alert.style.transition = "all 0.7s ease";
+                alert.style.opacity = "0";
+                alert.style.transform = "translateY(-10px)";
+                
+                setTimeout(function() {
+                    alert.style.display = "none";
+                }, 700);
+            }, 5000);
+        }
+    </script>
 </body>
 </html>
 

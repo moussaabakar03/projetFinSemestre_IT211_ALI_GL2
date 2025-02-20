@@ -23,15 +23,21 @@
     </style>
     <body>
         <div class = "fixed-top" style ="display: flex; justify-content: space-between; margin-top: 20px; margin-left: 20px; margin-right: 20px; background-color: #f0f0f0; padding: 10px; border-radius: 10px;">
-            <a href="{% url 'listeCateg' %}" type="button" class="btn btn-outline-primary" style = "height: 40px; margin-top: 10px;">DashBord </a>
-            <a href="{% url 'ajoutProduit' %}" type="button" class="btn btn-outline-primary" style = "height: 40px; margin-top: 10px;">Ajouter produit</a>
+            <a href="{% url 'listeCateg' %}" type="button" class="btn btn-outline-secondary" style = "height: 40px; margin-top: 10px; font-weight: bold;">DashBord </a>
+            <a href="{% url 'ajoutProduit' %}" type="button" class="btn btn-outline-secondary" style = "height: 40px; margin-top: 10px; font-weight: bold;">Ajouter produit</a>
             <h3 style = " text-align: center;"> Liste des produits  <span style ="color: red; font-weight : bold;">{{ categorie.nom }}(s)</span></h3>
             <form class="d-flex" role="search" action ="{% url 'listeProduits' %}" method="POST">
                 {% csrf_token %}
-                <input class="form-control me-2 largeInp" name = "produit" type="search" style = "height: 40px; margin-top: 10px;" placeholder="nom du produit" aria-label="Search">
-                <button class="btn btn-outline-success search" type="submit" style = "height: 39px; margin-top: 10px;">Rechercher</button>
+                <input class="form-control me-2 largeInp" name = "produit" type="search" style = "height: 40px; margin-top: 10px; font-weight: bold;" placeholder="nom du produit" aria-label="Search">
+                <button class="btn btn-outline-secondary search" type="submit" style = "height: 39px; margin-top: 10px;"><i class="fas fa-search" ></i></button>
             </form>
         </div>
+
+        {%if messages %}
+            {%for message in messages%}
+                <div class = "alert alert-success"  id = "alert" style = "margin-top: 100px; margin-bottom: 0px;"> {{message}}</div>
+            {%endfor%}
+        {% endif %}
         <table class="table table-striped table-hover tableau" style="border-radius: 10px; margin-top: 110px;">
             <thead>
                 <tr>
@@ -54,7 +60,13 @@
                 
                 <tr>
                     <td>{{ produit.id }}</td>
-                    <td><img src ="{{ produit.image.url }}" alt = "{{produit.nom}}" style = "width : 65px; height : 60px; border-radius: 15px; margin : 10px; object-fit: cover; margin-top: 0px; margin-bottom: 15px;" /></td>
+                    <td>
+                        {% if produit.image %}
+                            <a href = "{{ produit.image.url }}" ><img src ="{{ produit.image.url }}" alt = "{{produit.nom}}" style = "width : 65px; height : 60px; border-radius: 15px; margin : 10px; object-fit: cover; margin-top: 0px; margin-bottom: 15px;" /></a>
+                        {% else %}
+                            <img src ="" alt = "{{produit.nom}}" style = "width : 65px; height : 60px; border-radius: 15px; margin : 10px; object-fit: cover; margin-top: 0px; margin-bottom: 15px;" />
+                        {% endif %}
+                    </td>
                     <td>{{ produit.nom }}</td>
                     <td>{{ produit.description }}</td>
                     <td>{{ produit.categorie }}</td>
@@ -73,5 +85,18 @@
 
             </tbody>
         </table>
-</body>
+        <script>
+            var alert = document.getElementById("alert");
+            setTimeout(
+                function(){
+                    alert.style.opacity = "0";
+                    alert.style.transition = "all 0.5s ease";
+                    setTimeout(function(){
+                        alert.style.display = "none";
+                    }, 10);
+                }
+                , 3000);
+           
+        </script>
+    </body>
 </html>

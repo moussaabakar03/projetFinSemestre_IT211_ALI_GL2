@@ -1,0 +1,82 @@
+{% extends "categorie/listeCategorie.html" %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Tableau de bord</title>
+        {% block head %}
+            <style>
+            
+                body {
+                    font-family: Arial, sans-serif;
+                }
+                .conteneur div p{
+                    font-size: 20px;
+                }
+                .nomElement{
+                    font-size: 20px;
+                    {% comment %} background-color: green; {% endcomment %}
+                    padding-top: 10px;
+                    border-radius: 5px;
+                    {% comment %} color: white; {% endcomment %}
+                    text-align : center;
+                }
+                .nomElement:hover{
+                    .nomElement h2{
+                        color: blue;
+                    }
+                }
+                table, th, td {
+                    border: 1px solid black;
+                }
+            </style>
+        {% endblock %}
+    </head>
+    <body>
+
+        {% block header %}
+
+        <div class="conteneur" style="margin-top: 20px; display: flex; justify-content: space-between;background-color :#f0f0f0; ; padding: 10px; border-radius: 10px; ">
+            <div class = "nomElement btn btn-outline-secondary">
+                <p>Catégorie</p>
+                <h2>{{ total_categorie }}</h2>
+            </div>
+            <div class = "nomElement btn btn-outline-secondary">
+                <p>Produit</p>
+                <h2>{{ total_produit }}</h2>
+            </div>
+            <div class = "nomElement btn btn-outline-secondary">
+                <p>Achat/Vente</p>
+                <h2>{{ total_achat }}</h2>
+            </div>
+            <div class = "nomElement btn btn-outline-secondary">
+                <p>Chiffre d'affaire</p>
+                <h2>{{ total_chiffreAffaire }}</h2>
+            </div>
+        </div>
+        
+        <h2>Top 3 des Produits les Plus Achetés</h2>
+        <table border="1">
+            <tr>
+                <th>Produit</th>
+                <th>Nombre d'Achats</th>
+            </tr>
+            {% for produit in top_3_produits %}
+                <tr>
+                    <td>{{ produit.nom }}</td>
+                    <td>{{ produit.total_achats }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">Aucun achat enregistré.</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+
+        {% endblock %}
+
+    </body>
+</html>

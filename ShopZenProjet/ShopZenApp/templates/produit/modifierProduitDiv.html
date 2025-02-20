@@ -51,7 +51,7 @@
         border-radius: 6px;
         width: 50%;
         margin-bottom: 15px; 
-        {% comment %} margin-left: 23%; {% endcomment %}
+        margin-left: 23%;
         margin-top: 10px;
         transition : 0.5s;
     }
@@ -61,51 +61,30 @@
     h4{
         font-family: Algerian;
     }
-    
+    {% comment %} .divFormulaire{
+        display: flex;
+        justify-content : center;
+        items-align: center;
+    } {% endcomment %}
     </style>
 </head>
 <body>
    
-      
-    {% if messages %}
-        <div class="container mt-4">
-            {% for message in messages %}
-                <div class="alert alert-info alert-danger" role="alert" id="alert" style="margin-top: 10px; text-align: center;">
-                    <i class="fas fa-info-circle me-2"></i>{{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
+    
     <div class = " divFormulaire" style = "margin-top: 10px; display: flex!important; justify-content: center!important;">  
         <div class="bloc-form">
-           
-            <marquee><h4> Formulaire d'ajout categorie </h4></marquee>
-            <form action="{% url 'ajoutCateg' %}" method="POST" enctype="multipart/form-data" class="formulaire">
+            <marquee><h4> Formulaire de modification d'un produit </h4></marquee>
+            <form action="{% url 'modifierProduitDiv' produits.id %}" method="POST" enctype="multipart/form-data" class="formulaire">
                 {% csrf_token %}
-                {{ categories.as_p }}
-                <input type="submit" class = "button" value="Submit">
-                <a type ="button" class = "btn btn-danger" href="{% url 'listeCateg' %}" style = "width: 30%;">Annuler</a>
+                {{ produit.as_p }}
+                <div  class = "" style = "display: flex;">
+                    <input type="submit" value="Submit">
+                    <a href ="{% url 'ProduitDiv' %}" role =" button" class = "btn btn-danger" style = "display: block; width : 50%; height : 40px; margin-top: 15px; margin-right : 10px;"> Annuler</a>
+                </div>
             </form>
         <div>
     <div>
-        <script>
-            // Animation pour les alertes
-            let alert = document.getElementById('alert');
-            if (alert) {
-                setTimeout(function() {
-                    alert.style.transition = "all 0.7s ease";
-                    alert.style.opacity = "0";
-                    alert.style.transform = "translateY(-10px)";
-                    
-                    setTimeout(function() {
-                        alert.style.display = "none";
-                    }, 700);
-                }, 5000);
-            }
-        </script>
+        
 </body>
 </html>
 
-
-
-  

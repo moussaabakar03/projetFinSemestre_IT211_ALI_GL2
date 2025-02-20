@@ -1,15 +1,35 @@
+import re
 from django.http import HttpResponse
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from . models import Categorie, Produit, PanierClient, Achat
 from . forms import formCategorie, formProduit, PannierClient, formAchat, formFactureClient
 # Create your views here.
 
-
+def statistique(request):
+    
+    total_categorie = Categorie.objects.count()
+    total_produit = Produit.objects.count()
+    total_achat = Achat.objects.count()
+    
+    total_chiffreAffaire = sum(chiffre.prixTotal for chiffre in Achat.objects.all())
+    context = {'total_categorie': total_categorie, 'total_produit': total_produit, 'total_achat': total_achat, 'total_chiffreAffaire': total_chiffreAffaire}
+    return render(request, 'statistique.html', context)
 #/categorie/ listeCategorie: URL menant à la page de la liste des categories 
+
+def top_produits(request):
+    # Get products annotated with their total purchased quantities
+    top_3_produits = Produit.objects.annotate(
+        total_achats=sum('achats__quantite')
+    ).order_by('-total_achats')[:3]
+    
+    return render(request, 'statistique.html', {'top_3_produits': top_3_produits})
+  
 #Methode d'affichage de la liste des Categories 
 def listeCategorie(request):
     listcategories = Categorie.objects.all().order_by('id')
-    return render(request, 'categorie/listeCategorie.html', {'listcategories': listcategories})
+    total_categorie = Categorie.objects.count()
+    return render(request, 'categorie/listeCategorie.html', {'listcategories': listcategories, 'total_categorie': total_categorie})
 
 
 #/categorie/ ajoutcategorie:  URL menant à la page d'ajout d'une categorie
@@ -25,16 +45,23 @@ def ajoutCategorie(request):
             noms = categorie.cleaned_data['nom']
             descriptions = categorie.cleaned_data['description']
             image = categorie.cleaned_data['image']
+        if not re.search('[a-zA-Z]', noms):  # Vérifie s'il y a au moins une lettre
+            messages.error(request, f"Le champ nom ({noms}) ne peut pas contenir uniquement des chiffres.")
+                    # re.search(...) : Fonction du module re (regular expressions) en Python qui cherche un motif dans une chaîne de caractères.
+            return redirect("ajoutCateg")
+        
+        else:
             # 4 Création et sauvegarde d'une categorie
             oCat1 = Categorie(nom=noms, description=descriptions, image=image)
             oCat1.save()
-            #5 Rediriger vers page de liste des categories
+            
+            # 5. Redirection vers la liste des catégories avec un message de succès
+            messages.success(request, f"Catégorie {noms} ajoutée avec succès !")
             return redirect("listeCateg")
     else:
         #Formulaire vide pour requête GET 
         categorie = formCategorie()
     return render(request, 'categorie/ajoutCategorie.html', {'categories': categorie})
-
 
 
 #Methode suppression d'un client 
@@ -88,6 +115,18 @@ def listeProduits(request):
         produits = Produit.objects.all().order_by('id')
         context = {"listeProduit": produits}
         return render(request, "produit/produitListe.html", context)  
+
+def ProduitDiv(request):
+    if request.method == "POST":
+        nom1 = request.POST.get("produit")
+        produits = Produit.objects.all().order_by('id')
+        produit = produits.filter(nom__icontains=nom1)
+        context = {"listeProduit": produit}
+        return render(request, "produit/produitDiv.html", )
+    else:
+        produits = Produit.objects.all().order_by('id')
+        context = {"listeProduit": produits}
+        return render(request, "produit/ProduitDiv.html", context)  
     
 #/produit/ listeProduit: URL menant à la page de la liste des Produit 
 #Methode d'affichage de la liste des produits 
@@ -120,11 +159,24 @@ def ajoutProduit(request):
             images = produit.cleaned_data['image']
             quantites = produit.cleaned_data['quantite']
             
-            # 4 Création et sauvegarde d'un produit
-            oProduit1 = Produit(categorie=categories, nom=noms, description=descriptions, image =images, prix=prix, quantite=quantites)
-            oProduit1.save()
-                       
-            return redirect("listeProduit" , id=categories.id)
+            
+            if not re.search('[a-zA-Z]', noms): 
+                messages.error(request, "Le champ 'nom du produit' ne peut pas contenir uniquement des chiffres.")
+                return redirect("ajoutProduit")
+            
+            # prix = float(prix)  # Convertit en float
+            if quantites <= 0:
+                messages.error(request, "Le quatité ne peut pas être négatif.")
+                return redirect('ajoutProduit')
+            if prix <= 0:
+                messages.error(request, "Le prix ne peut pas être négatif.")
+                return redirect('ajoutProduit')
+            else:
+                # 4 Création et sauvegarde d'un produit
+                oProduit1 = Produit(categorie=categories, nom=noms, description=descriptions, image =images, prix=prix, quantite=quantites)
+                oProduit1.save()
+                messages.success(request, "Produit ajouté avec succès!!!")
+                return redirect("listeProduit" , id=categories.id)
     else:
         #Requête GET
         produit = formProduit()
@@ -165,6 +217,13 @@ def modifierProduit(request, id):
             produits.prix = prix
             produits.quantite = quantite
             
+        if quantite <= 0:
+            messages.error(request, "Le quatité ne peut pas être négatif.")
+            return redirect('listeProduits')
+        if prix <= 0:
+            messages.error(request, "Le prix ne peut pas être négatif.")
+            return redirect('listeProduits')
+        else:
             produits.save()
             return redirect("listeProduits")
     else:
@@ -172,6 +231,47 @@ def modifierProduit(request, id):
         produit = formProduit(initial= {'image': produits.image, 'nom': produits.nom, 'description': produits.description, 'categorie': produits.categorie, 'prix': produits.prix, 'quantite': produits.quantite})
         # content = {'produit': produit}
     return render(request, 'produit/modifierProduit.html', {'produit': produit, 'produits': produits})
+
+#Méthode permettant de modifier un produit
+def modifierProduitDiv(request, id):
+    # Requête GET
+    produits= Produit.objects.get(id = id)
+    
+    if request.method == 'POST':
+        # Requête POST
+        produit = formProduit(request.POST, request.FILES)
+        
+        if produit.is_valid():
+            # 3 Preparation des données
+            image = produit.cleaned_data['image']
+            nom = produit.cleaned_data['nom']
+            description = produit.cleaned_data['description']
+            categorie = produit.cleaned_data['categorie']
+            prix = produit.cleaned_data['prix']
+            quantite = produit.cleaned_data['quantite']
+
+            produits.image = image
+            produits.nom = nom
+            produits.description = description
+            produits.categorie = categorie
+            produits.prix = prix
+            produits.quantite = quantite
+            if quantite <= 0:
+                messages.error(request, "Le quatité ne peut pas être négatif.")
+                return redirect('ProduitDiv')
+            if prix <= 0:
+                messages.error(request, "Le prix ne peut pas être négatif.")
+                return redirect('ProduitDiv')
+            else:
+                produits.save()
+                # return redirect("ProduitDiv")
+                produits.save()
+                return redirect("ProduitDiv")
+    else:
+        # Requête GET
+        produit = formProduit(initial= {'image': produits.image, 'nom': produits.nom, 'description': produits.description, 'categorie': produits.categorie, 'prix': produits.prix, 'quantite': produits.quantite})
+        # content = {'produit': produit}
+    return render(request, 'produit/modifierProduitDiv.html', {'produit': produit, 'produits': produits})
 
 #Méthode permettant de creer un pannier
 def produitPannier(request):
@@ -212,8 +312,14 @@ def ajoutProduitPannier(request, id):
     
     # recuperer le dernier pannier crée
     dernier_panier = PanierClient.objects.order_by('-id').first()
+    
+    if not dernier_panier:
+        messages.error(request, "Aucun panier trouvé. Veuillez en créer un.")
+        return redirect('creer_panier')
+
     if request.method == 'POST':
-         # Requête POST
+        # try:
+        # Requête POST
         oFormAchat = formAchat(request.POST)
         if oFormAchat.is_valid():
             # 3 Preparation des données
@@ -223,7 +329,10 @@ def ajoutProduitPannier(request, id):
             # prixUnitaire = oFormAchat.cleaned_data['prixUnitaire']
             modePayement = oFormAchat.cleaned_data['modePayement']
             # prixTotal = oFormAchat.cleaned_data['prixTotal']
-            
+        if quantite > produits.quantite or quantite <= 0:
+            messages.error(request, "Quantité insuffisante ou invalide")
+            return redirect('produitPannier')
+        else:
             oAchat = Achat(produit = produit, panierDuClient = panierDuClient, quantite=quantite, modePayement = modePayement)
             # idProduit.produit = produit
             # idProduit.panierDuClient = panierDuClient
@@ -231,12 +340,13 @@ def ajoutProduitPannier(request, id):
             # produits.modePayement = modePayement
             
             oAchat.save()
+            messages.success(request, f"Achat ajouté avec succès au pannier N°{panierDuClient}")
             return redirect('produitPannier')
     else:
         # Requête GET
         # Pré-remplir le formulaire avec le panier ayant l'ID maximal
-        oFormAchat = formAchat(initial={'produit': id, 'panierDuClient': dernier_panier, 'quantite': produits.quantite, 'modePayement': 'Carte de crédit'})
-        
+        oFormAchat = formAchat(initial={'produit': id, 'panierDuClient': dernier_panier, 'quantite': produits.quantite,})
+    
     return render(request, 'pannier/ajouterProduitPannier.html', {'oFormAchat': oFormAchat, 'id': id})
             
             
@@ -256,6 +366,21 @@ def listeAchat(request):
     return render(request, 'achat/listeAchat.html', {'achat': achats})
 
 
+def divListeAchat(request):
+    if request.method == "POST":
+        id_pannier = request.POST.get("idPannier").strip() # Supprime les espaces avant et après, pour éviter des erreurs.
+
+        if id_pannier.isdigit():  # Vérifier si c'est un nombre valide
+            achats = Achat.objects.filter(panierDuClient=id_pannier).order_by('id')
+        else:
+            achats = Achat.objects.all().order_by('id')
+
+        return render(request, 'achat/divListeAchat.html', {'achat': achats})
+    
+    # Si ce n'est pas un POST, afficher toutes les données
+    achats = Achat.objects.all().order_by('id')
+    return render(request, 'achat/divListeAchat.html', {'achat': achats})
+
 
 # def listeAchat(request):
 #     if request.method == "POST":
@@ -272,6 +397,28 @@ def listeAchat(request):
 #     return render(request, 'achat/listeAchat.html',  {'achat': achats})
 
 
+def modifierAchat(request, id):
+    achat = get_object_or_404(Achat, id=id) 
+
+    if request.method == 'POST':
+        achatForms = formAchat(request.POST)
+        if achatForms.is_valid():
+            achat.produit = achatForms.cleaned_data['produit']
+            achat.panierDuClient = achatForms.cleaned_data['panierDuClient']
+            achat.quantite = achatForms.cleaned_data['quantite']
+            achat.modePayement = achatForms.cleaned_data['modePayement']
+            
+            achat.save()
+            return redirect('listeAchat')  # Redirection après modification
+    else:
+        achatForms = formAchat(initial={
+            'produit': achat.produit, 
+            'panierDuClient': achat.panierDuClient, 
+            'quantite': achat.quantite, 
+            'modePayement': achat.modePayement
+        })
+
+    return render(request, 'achat/modifierAchat.html', {'achat': achat, 'oFormAchat': achatForms})
 
 def supprimerAchat(request, id):
     idAchat = Achat.objects.get(id=id)

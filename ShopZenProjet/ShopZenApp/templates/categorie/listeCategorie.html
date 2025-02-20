@@ -68,44 +68,49 @@
             {% comment %} transform: none; {% endcomment %}
         }
     </style>
+    {% block head %}{% endblock %}
 </head>
 <body>
     
     <header class = "fixed-top entete" style ="background-color: #343A40; margin-top: 0px; padding: 0px; padding-top: 10px; padding-bottom: 10px; margin-left: 0px; margin-right: 0px; height: 60px;">
         <nav class="navig">
             <div>
-                <a class="nomHopi a" style = "font-size: 30px;" href="#">ShopZenApp</a>
+                <i class="fas fa-shopping-cart" style="font-size: 30px; color:rgb(219, 230, 220);"></i>
+                <a class="nomHopi a" style = "font-size: 30px;" href="{% url 'statistique' %}">ShopZenApp</a>
             </div>
             <form class="d-flex" role="search" style = "height : 36px;"action ="{% url 'listeProduits' %}" method="POST">
                 {% csrf_token %}
                 <input class="form-control me-2 largeInp" name = "produit" type="search" placeholder="Rechercher Produits">
-                <button class="btn btn-outline-text-danger search" type="submit">Search</button>
+                <button class="btn btn-outline-text-danger search" type="submit" > <i class="fas fa-search" ></i></button>
             </form>
             
             {% comment %} <div class="d-flex" style="margin-left: 100px;"> {% endcomment %}
             <div class="liens">
                 <div>
-                    <a class ="me-3 py-2 link-body-emphasis text-decoration-none a" href="{% url 'listeProduits' %}" style="font-size: 18px; margin-top: 5px; color: #FFFFFF!important;">Produits</a>
+                    <i class="fas fa-box" style="font-size: 27px; color:rgb(247, 160, 31);"></i>
+                    <a class ="me-3 py-2 link-body-emphasis text-decoration-none a" href="{% url 'ProduitDiv' %}" style="font-size: 18px; margin-top: 5px; color: #FFFFFF!important;">Produits</a>
                 </div>
                 <div>
+                    <i class="fas fa-shopping-bag" style="font-size: 27px; color:rgb(218, 162, 228);"></i>
                     <a class ="me-3 py-2 link-body-emphasis text-decoration-none a" href="{% url 'listeAchat' %}"  style="font-size: 18px; margin-top: 5px; color: #FFFFFF!important;">Achat/Vente</a>
                 </div>
                 <div>
-                    <a class ="me-3 py-2 link-body-emphasis text-decoration-none a" href="{% url 'ajoutPannier' %}" onclick="return confirm ('Voulez-vous vraiment créer un panier?');" style="font-size: 18px; margin-top: 5px; color: #FFFFFF!important;">PannierClient</a>
+                    <i class="fas fa-shopping-cart" style="font-size: 27px; color:rgb(197, 220, 198);"></i>
+                    <a class ="me-3 py-2 link-body-emphasis text-decoration-none a" href="{% url 'ajoutPannier' %}" onclick="return confirm ('Voulez-vous vraiment créer un panier?');" style="font-size: 18px; margin-top: 5px; color: #FFFFFF!important;"> PannierClient</a>
                 </div>
-                {% comment %} <div>
-                    <a class ="me-3 py-2 link-body-emphasis text-decoration-none a" href="#" style="font-size: 18px; margin-top: 5px; color: #FFFFFF!important;">Facture</a>
-                </div>
-                 {% endcomment %}
             </div>
         </nav>
     </header>
-
+   
+    {% block header %}
+   
     <div class="container py-3">
-        <h2 class="text-center" style = "margin-top: 20px; margin-bottom: 20px; display: inline; margin-left: 35%;">Liste des <span style ="color:rgb(239, 134, 30); font-size : 35px; font-weight: bold;">categories</span></h2>
-        <a href="{% url 'ajoutCateg' %}" type="button" class="btn btn-outline-secondary" style = "color :rgb(239, 134, 30); margin-top: 20px; margin-bottom: 20px; margin-left: 200px;">Ajouter Categorie</a>
-
-    
+        <div style = "display: flex; justify-content: space-between; margin-top: 20px; margin-bottom: 20px;">
+            <h4> <span style = "color: rgb(239, 134, 30); font-size: 35px; font-weight: bold;">{{total_categorie}}</span> categories stockés</h4>
+            <h2 class="text-center" style = "display: inline;">Liste des <span style ="color:rgb(239, 134, 30); font-size : 35px; font-weight: bold;">categories</span></h2>
+            <a href="{% url 'ajoutCateg' %}" type="button" class="btn btn-outline-secondary" style = "color :rgb(239, 134, 30);">Ajouter Categorie</a>
+        </div>
+        
         <main style = "display : flex; flex-wrap: wrap; justify-content: space-between;">
             {% comment %} <div class="row row-cols-1 row-cols-md-3 mb-3 text-center"> {% endcomment %}
                 {% for categorie in listcategories %}
@@ -116,11 +121,15 @@
                         </div>
                         <div class="card-body">
                             <ul class="list-unstyled mt-3 mb-4">
-                                {% comment %} style = "display : flex; flex-wrap: wrap;" {% endcomment %}
                                 <div style = "display : flex; flex-wrap: wrap; justify-content: center; ">
-                                    <a href = "{% url 'listeProduit' categorie.id %}" title ="Voir les produits"> <img src="{{ categorie.image.url }}" alt ="imageCategorie {{categorie.nom}}" style = "width : 135px; height : 120px; border-radius: 15px; margin : 10px; object-fit: cover; margin-top: 0px; margin-bottom: 15px;"/></a>
+                                    <a href = "{% url 'listeProduit' categorie.id %}" title ="Voir les produits"> 
+                                        {% if categorie.image %}
+                                            <img src="{{ categorie.image.url }}" alt ="imageCategorie {{categorie.nom}}" style = "width : 135px; height : 120px; border-radius: 15px; margin : 10px; object-fit: cover; margin-top: 0px; margin-bottom: 15px;"/>
+                                        {% else %}
+                                            <img src="" alt ="imageCategorie {{categorie.nom}}" style = "width : 135px; height : 120px; border-radius: 15px; margin : 10px; object-fit: cover; margin-top: 0px; margin-bottom: 15px;"/>
+                                        {% endif %}
+                                    </a>
                                 </div>
-                                {% comment %} <a href = "{% url 'listeProduit' categorie.id %}" title ="Voir les produits"> <img src="{{ categorie.image.url }}" alt ="imageCategorie {{categorie.nom}}" style = "width : 135px; height : 120px; border-radius: 15px; margin : 10px; object-fit: cover; margin-left: 30%;"/></a> {% endcomment %}
                                 <div>{{ categorie.description }}</div>
                             </ul>
                             <div class="d-flex w-100 justify-content-between mb-2" style="gap: 10px;">
@@ -132,53 +141,16 @@
                             </div>
                         </div>  
                 </div>
-                {% endfor %}
-                
-                
+                {% endfor %}                
             </div>
         
         </main>
-    
-        {% comment %} <footer class="pt-4 my-md-5 pt-md-5 border-top">
-            <div class="row">
-                <div class="col-12 col-md">
-                <img class="mb-2" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="24" height="19">
-                <small class="d-block mb-3 text-body-secondary">&copy_ShopZen</small>
-                </div>
-                <div class="col-6 col-md">
-                <h5>Features</h5>
-                <ul class="list-unstyled text-small">
-                    <li class="mb-1"><a class="link-secondary text-decoration-none" href="#">Cool stuff</a></li>
-                    <li class="mb-1"><a class="link-secondary text-decoration-none" href="#">Random feature</a></li>
-                    <li class="mb-1"><a class="link-secondary text-decoration-none" href="#">Team feature</a></li>
-                    <li class="mb-1"><a class="link-secondary text-decoration-none" href="#">Stuff for developers</a></li>
-                    <li class="mb-1"><a class="link-secondary text-decoration-none" href="#">Another one</a></li>
-                    <li class="mb-1"><a class="link-secondary text-decoration-none" href="#">Last time</a></li>
-                </ul>
-                </div>
-                <div class="col-6 col-md">
-                <h5>Resources</h5>
-                <ul class="list-unstyled text-small">
-                    <li class="mb-1"><a class="link-secondary text-decoration-none" href="#">Resource</a></li>
-                    <li class="mb-1"><a class="link-secondary text-decoration-none" href="#">Resource name</a></li>
-                    <li class="mb-1"><a class="link-secondary text-decoration-none" href="#">Another resource</a></li>
-                    <li class="mb-1"><a class="link-secondary text-decoration-none" href="#">Final resource</a></li>
-                </ul>
-                </div>
-                <div class="col-6 col-md">
-                <h5>About</h5>
-                <ul class="list-unstyled text-small">
-                    <li class="mb-1"><a class="link-secondary text-decoration-none" href="#">Team</a></li>
-                    <li class="mb-1"><a class="link-secondary text-decoration-none" href="#">Locations</a></li>
-                    <li class="mb-1"><a class="link-secondary text-decoration-none" href="#">Privacy</a></li>
-                    <li class="mb-1"><a class="link-secondary text-decoration-none" href="#">Terms</a></li>
-                </ul>
-                </div>
-            </div>
-        </footer> {% endcomment %}
     </div>
+
+    {% endblock %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-
+    
 </body>
 </html>
+

@@ -3,6 +3,11 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('statistique', views.statistique, name='statistique'),
+    path('top_produits', views.top_produits, name='top_produits'),
+    
+    
+    
     path('', views.listeCategorie, name='listeCateg'),
     path('ajoutCateg/', views.ajoutCategorie, name='ajoutCateg'),
     path('suppCatego/<int:id>/', views.supprimerCategorie, name='suppCategorie'),
@@ -10,10 +15,12 @@ urlpatterns = [
     
     
     path('listeProduits/', views.listeProduits, name='listeProduits'),
+    path('ProduitDiv/', views.ProduitDiv, name='ProduitDiv'),
     path('listeProduitParCategorie/<int:id>/', views.listeProduitParCategorie, name='listeProduit'),
     path('ajoutProduit/', views.ajoutProduit, name='ajoutProduit'),
     path('supprimerProduit/<int:id>/', views.supprimerProduit, name='supprimerProduit'),
     path('modifierProduit/<int:id>/', views.modifierProduit, name='modifierProduit'),
+    path('modifierProduitDiv/<int:id>/', views.modifierProduitDiv, name='modifierProduitDiv'),
     # path('filtrerProduit/<str:nom>/', views.filtrerProduit, name='filtrerProduit'),
     
     
@@ -23,7 +30,10 @@ urlpatterns = [
     
     
     path('listeAchat/', views.listeAchat, name='listeAchat'),
+    path('divListeAchat/', views.divListeAchat, name='divListeAchat'),
     path('supprimerAchat/<int:id>/', views.supprimerAchat, name='supprimerAchat'),
+    # path('modifierAchat/<int:id>/', views.modifierAchat, name='modifierAchat'),
+    path('modifierAchat/<int:id>/', views.modifierAchat, name='modifierAchat'),
     
     
     

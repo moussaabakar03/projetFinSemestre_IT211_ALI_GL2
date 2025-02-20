@@ -1,0 +1,176 @@
+{% extends "produit/produitListe.html" %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Liste des produits</title>
+        {% block head %} 
+        <style>
+            body {
+                background-color: #f8f9fa;
+                font-family: 'Arial', sans-serif;
+                margin: 0;
+                padding: 0;
+            }
+
+            .container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 20px;
+                gap: 20px;
+                margin-top: 170px;
+            }
+
+            .cold {
+                width: 300px;
+                height: 500px;
+                background-color: #ffffff;
+                color: #333;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                padding: 15px;
+                transition: transform 0.3s, box-shadow 0.3s;
+            }
+
+            .cold:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            }
+
+            .cold div {
+                text-align: center;
+            }
+
+            .cold h3 {
+                font-size: 18px;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+
+            .cold img {
+                width: 80px;
+                height: 80px;
+                border-radius: 15px;
+                object-fit: cover;
+                display: block;
+                margin: 10px auto;
+            }
+
+            .nomColonne {
+                display: block;
+                font-weight: bold;
+                font-size: 14px;
+                color: #555;
+            }
+
+            .actions {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 10px;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                text-decoration: none;
+                font-size: 14px;
+                border-radius: 5px;
+                text-align: center;
+                transition: background-color 0.3s ease-in-out;
+            }
+
+            .btn-warning {
+                background-color: #ffc107;
+                color: #fff;
+                border: none;
+            }
+
+            .btn-warning:hover {
+                background-color: #e0a800;
+            }
+
+            .btn-danger {
+                background-color: #dc3545;
+                color: #fff;
+                border: none;
+            }
+
+            .btn-danger:hover {
+                background-color: #c82333;
+            }
+
+        </style>
+        {% endblock %}
+    </head>
+    <body>
+        {% block header %}
+        {% if messages %}
+            <div class="container mt-4">
+                {% for message in messages %}
+                    <div class="alert alert-info alert-custom" role="alert" id="alert" style = "margin-top: 155px; margin-bottom: 0px!important;">
+                        <i class="fas fa-info-circle me-2"></i>{{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="container">
+            {% for produit in listeProduit %}
+                <div class="cold">
+                    <div>
+                        <h3>{{ produit.nom }}</h3>
+                    </div>
+                    <div>
+                        {% if produit.image %}
+                            <a href="{{ produit.image.url }}">
+                                <img src="{{ produit.image.url }}" alt="{{ produit.nom }}" />
+                            </a>
+                        {% else %}
+                            <img src="" alt="{{ produit.nom }}" />
+                        {% endif %}
+                    </div>
+                    <div>
+                        <p><span class="nomColonne">Description:</span> {{ produit.description }}</p>
+                    </div>
+                    <div>
+                        <p><span class="nomColonne">Catégorie:</span> {{ produit.categorie }}</p>
+                    </div>
+                    <div>
+                        <p><span class="nomColonne">Prix:</span> <span style = "font-weight: bold; color: green; font-size: 17px;">{{ produit.prix }} FCFA</span></p>
+                    </div>
+                    <div>
+                        <p><span class="nomColonne">Quantité:</span> {{ produit.quantite }}</p>
+                    </div>
+                    <div class="actions">
+                        <a href="{% url 'modifierProduitDiv' produit.id %}" class="btn btn-warning"><i class="fas fa-edit"></i> Modifier</a>
+                        <a href="{% url 'supprimerProduit' produit.id %}" class="btn btn-danger" onclick="return confirm('Voulez-vous vraiment supprimer ce produit?');">
+                            <i class="fas fa-trash-alt"></i> Supprimer
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+
+        <script>
+            let alert = document.getElementById('alert');
+            if (alert) {
+                setTimeout(function() {
+                    alert.style.transition = "all 0.7s ease";
+                    alert.style.opacity = "0";
+                    alert.style.transform = "translateY(-10px)";
+                    
+                    setTimeout(function() {
+                        alert.style.display = "none";
+                    }, 700);
+                }, 5000);
+            }
+        </script>
+        {% endblock %}
+        
+    </body>
+</html>

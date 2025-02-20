@@ -1,0 +1,153 @@
+{% extends "achat/listeAchat.html" %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    {% block head %}
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+            gap: 20px;
+            {% comment %} margin-top: 170px; {% endcomment %}
+        }
+
+        .cold {
+            width: 300px;
+            height: 500px;
+            background-color: #ffffff;
+            color: #333;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cold:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .cold div {
+            text-align: center;
+        }
+
+        .cold h3 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .cold img {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            object-fit: cover;
+            display: block;
+            margin: 10px auto;
+        }
+
+        .nomColonne {
+            display: block;
+            font-weight: bold;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 5px;
+            text-align: center;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+    </style>
+    {% endblock %}
+</head>
+<body>
+
+    {% block content %} 
+
+    <div class="container" style="margin-top: 160px;">
+        {% for achats in achat %}
+            <div class="cold">
+                <div>
+                    <h3>{{ achats.produit }}</h3>
+                </div>
+                <div>
+                    <p><span class="nomColonne">Prix unitaire:</span> {{ achats.prixUnitaire }}</p>
+                </div>
+                <div>
+                    <p><span class="nomColonne">Mode de payement:</span> {{ achats.modePayement }}</p>
+                </div>
+                <div>
+                    <p><span class="nomColonne">Pannier du client:</span> {{ achats.panierDuClient }}</p>
+                </div>
+                <div>
+                    <p><span class="nomColonne">Quantité:</span> {{ achats.quantite }}</p>
+                </div>
+                <div>
+                    <p><span class="nomColonne">Prix Total:</span> <span style = "font-weight: bold; color: green; font-size: 17px;">{{ achats.prixTotal }} FCFA</span></p>
+                </div>
+                <div>
+                    <p><span class="nomColonne">Date achat:</span> {{ achats.dateAchat }}</p>
+                </div>
+                <div class="actions">
+                    <a href="" class="btn btn-warning"><i class="fas fa-edit"></i> Modifier</a>
+                    <a href="{% url 'supprimerAchat' achats.id %}" class="btn btn-danger" onclick="return confirm('Voulez-vous vraiment supprimer ce produit?');">
+                        <i class="fas fa-trash-alt"></i> Supprimer
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% endblock %}
+
+</body>
+</html>
+
+
