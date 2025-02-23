@@ -12,8 +12,8 @@ class formProduit(forms.Form):
     nom = forms.CharField(label ="Nom ", max_length=255)
     description = forms.CharField(label ="Description ", widget= forms.Textarea())
     image = forms.ImageField(label ="Image", required=False)
-    prix = forms.DecimalField(label ="Prix ", max_digits=10, decimal_places=2)
-    quantite = forms.IntegerField(label ="Quantite ")
+    prix = forms.DecimalField(label ="Prix ", max_digits=10, decimal_places=2, min_value= 0)
+    quantite = forms.IntegerField(label ="Quantite", min_value=1)
 
 
 class PannierClient(forms.Form):

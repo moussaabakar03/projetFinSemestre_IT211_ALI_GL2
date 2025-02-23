@@ -76,19 +76,26 @@
         <nav class="navig">
             <div>
                 <i class="fas fa-shopping-cart" style="font-size: 30px; color:rgb(219, 230, 220);"></i>
-                <a class="nomHopi a" style = "font-size: 30px;" href="{% url 'statistique' %}">ShopZenApp</a>
+                <a class="nomHopi a" style = "font-size: 30px;" href="">ShopZenApp</a>
             </div>
-            <form class="d-flex" role="search" style = "height : 36px;"action ="{% url 'listeProduits' %}" method="POST">
+            <div>
+                <i class="fa-solid fa-chart-line" style="font-size: 30px; color:rgb(219, 230, 220);"></i>
+                <a class="a" style = "font-size: 25px;" href="{% url 'dashBord' %}">Dashboard</a>
+            </div>
+            <form class="d-flex" role="search" style = "height : 36px;" action ="{% url 'listeProduits' %}" method="POST">
                 {% csrf_token %}
                 <input class="form-control me-2 largeInp" name = "produit" type="search" placeholder="Rechercher Produits">
                 <button class="btn btn-outline-text-danger search" type="submit" > <i class="fas fa-search" ></i></button>
             </form>
-            
             {% comment %} <div class="d-flex" style="margin-left: 100px;"> {% endcomment %}
             <div class="liens">
                 <div>
+                    <i class="fa-solid fa-layer-group" style="font-size: 27px; color:rgb(186, 201, 163);"></i>
+                    <a class ="me-3 py-2 link-body-emphasis text-decoration-none a" href="{% url 'listeCateg' %}" style="font-size: 18px; margin-top: 5px; color: #FFFFFF!important;">Categorie</a>
+                </div>
+                <div>
                     <i class="fas fa-box" style="font-size: 27px; color:rgb(247, 160, 31);"></i>
-                    <a class ="me-3 py-2 link-body-emphasis text-decoration-none a" href="{% url 'ProduitDiv' %}" style="font-size: 18px; margin-top: 5px; color: #FFFFFF!important;">Produits</a>
+                    <a class ="me-3 py-2 link-body-emphasis text-decoration-none a" href="{% url 'ProduitDiv' %}" style="font-size: 18px; margin-top: 5px; color: #FFFFFF!important;">Produit</a>
                 </div>
                 <div>
                     <i class="fas fa-shopping-bag" style="font-size: 27px; color:rgb(218, 162, 228);"></i>
@@ -99,6 +106,7 @@
                     <a class ="me-3 py-2 link-body-emphasis text-decoration-none a" href="{% url 'ajoutPannier' %}" onclick="return confirm ('Voulez-vous vraiment créer un panier?');" style="font-size: 18px; margin-top: 5px; color: #FFFFFF!important;"> PannierClient</a>
                 </div>
             </div>
+            
         </nav>
     </header>
    

@@ -60,7 +60,7 @@
     <body>
         
         <header class = "entete fixed-top">
-            <a href="{% url 'listeCateg' %}" type="button" class="btn btn-outline-secondary" style = "height: 40px; margin-top: 10px; font-weight: bold;">DashBord </a>
+            <a href="{% url 'dashBord' %}" type="button" class="btn btn-outline-secondary" style = "height: 40px; margin-top: 10px; font-weight: bold;">DashBord </a>
             <a href="{% url 'ajoutProduit' %}" type="button" class="btn btn-outline-secondary" style = "height: 40px; margin-top: 10px; font-weight: bold;">Ajouter produit</a>
             <h3 style = " text-align: center;"> Liste complete des  <span style ="color: red; font-weight : bold;">produits</span></h3>
             <form class="d-flex" role="search" action ="{% url 'listeProduits' %}" method = "POST">

@@ -1,4 +1,5 @@
 import re
+from django.db.models import Sum, Count
 from django.http import HttpResponse
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
@@ -6,24 +7,28 @@ from . models import Categorie, Produit, PanierClient, Achat
 from . forms import formCategorie, formProduit, PannierClient, formAchat, formFactureClient
 # Create your views here.
 
-def statistique(request):
-    
+def dashBord(request):
     total_categorie = Categorie.objects.count()
     total_produit = Produit.objects.count()
     total_achat = Achat.objects.count()
-    
     total_chiffreAffaire = sum(chiffre.prixTotal for chiffre in Achat.objects.all())
-    context = {'total_categorie': total_categorie, 'total_produit': total_produit, 'total_achat': total_achat, 'total_chiffreAffaire': total_chiffreAffaire}
-    return render(request, 'statistique.html', context)
-#/categorie/ listeCategorie: URL menant à la page de la liste des categories 
-
-def top_produits(request):
-    # Get products annotated with their total purchased quantities
-    top_3_produits = Produit.objects.annotate(
-        total_achats=sum('achats__quantite')
-    ).order_by('-total_achats')[:3]
     
-    return render(request, 'statistique.html', {'top_3_produits': top_3_produits})
+    top_3_produits = Produit.objects.annotate(
+        total_achats=Sum('achats__quantite')
+    ).filter(total_achats__gt=0).order_by('-total_achats')[:5]
+    
+    context = {'total_categorie': total_categorie, 'total_produit': total_produit, 'total_achat': total_achat, 'total_chiffreAffaire': total_chiffreAffaire, 'top_3_produits': top_3_produits}
+    return render(request, 'dashBord.html', context)
+
+
+#/categorie/ listeCategorie: URL menant à la page de la liste des categories 
+# def top_produits(request):
+#     # Get products annotated with their total purchased quantities
+#     top_3_produits = Produit.objects.annotate(
+#         total_achats=Sum('achats__quantite')
+#     ).order_by('-total_achats')[:2]
+    
+#     return render(request, 'statistique.html', {'top_3_produits': top_3_produits})
   
 #Methode d'affichage de la liste des Categories 
 def listeCategorie(request):
@@ -315,7 +320,7 @@ def ajoutProduitPannier(request, id):
     
     if not dernier_panier:
         messages.error(request, "Aucun panier trouvé. Veuillez en créer un.")
-        return redirect('creer_panier')
+        return redirect('ajoutPannier')
 
     if request.method == 'POST':
         # try:
@@ -340,7 +345,7 @@ def ajoutProduitPannier(request, id):
             # produits.modePayement = modePayement
             
             oAchat.save()
-            messages.success(request, f"Achat ajouté avec succès au pannier N°{panierDuClient}")
+            messages.success(request, f"{quantite} {produit} ajouté (es) avec succès au pannier N°{panierDuClient}")
             return redirect('produitPannier')
     else:
         # Requête GET
@@ -355,14 +360,14 @@ def listeAchat(request):
         id_pannier = request.POST.get("idPannier").strip() # Supprime les espaces avant et après, pour éviter des erreurs.
 
         if id_pannier.isdigit():  # Vérifier si c'est un nombre valide
-            achats = Achat.objects.filter(panierDuClient=id_pannier).order_by('id')
+            achats = Achat.objects.filter(panierDuClient=id_pannier).order_by('-id')
         else:
-            achats = Achat.objects.all().order_by('id')
+            achats = Achat.objects.all().order_by('-id')
 
         return render(request, 'achat/listeAchat.html', {'achat': achats})
     
     # Si ce n'est pas un POST, afficher toutes les données
-    achats = Achat.objects.all().order_by('id')
+    achats = Achat.objects.all().order_by('-id')
     return render(request, 'achat/listeAchat.html', {'achat': achats})
 
 
@@ -398,27 +403,33 @@ def divListeAchat(request):
 
 
 def modifierAchat(request, id):
-    achat = get_object_or_404(Achat, id=id) 
-
+    # Requête GET
+    achat = Achat.objects.get(id=id)
+    
     if request.method == 'POST':
+        # Requête POST
         achatForms = formAchat(request.POST)
+        
         if achatForms.is_valid():
+            # Préparation des données
             achat.produit = achatForms.cleaned_data['produit']
             achat.panierDuClient = achatForms.cleaned_data['panierDuClient']
             achat.quantite = achatForms.cleaned_data['quantite']
             achat.modePayement = achatForms.cleaned_data['modePayement']
             
             achat.save()
-            return redirect('listeAchat')  # Redirection après modification
+            return redirect("listeAchat")
     else:
+        # Requête GET
         achatForms = formAchat(initial={
             'produit': achat.produit, 
             'panierDuClient': achat.panierDuClient, 
             'quantite': achat.quantite, 
             'modePayement': achat.modePayement
         })
-
+    
     return render(request, 'achat/modifierAchat.html', {'achat': achat, 'oFormAchat': achatForms})
+
 
 def supprimerAchat(request, id):
     idAchat = Achat.objects.get(id=id)

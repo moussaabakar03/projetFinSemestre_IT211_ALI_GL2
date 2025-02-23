@@ -71,7 +71,10 @@
 
         .actions {
             display: flex;
-            justify-content: space-between;
+            {% comment %} justify-content: space-between; {% endcomment %}
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
             margin-top: 10px;
         }
 
@@ -136,7 +139,7 @@
                     <p><span class="nomColonne">Date achat:</span> {{ achats.dateAchat }}</p>
                 </div>
                 <div class="actions">
-                    <a href="" class="btn btn-warning"><i class="fas fa-edit"></i> Modifier</a>
+                    {% comment %} <a href="" class="btn btn-warning"><i class="fas fa-edit"></i> Modifier</a> {% endcomment %}
                     <a href="{% url 'supprimerAchat' achats.id %}" class="btn btn-danger" onclick="return confirm('Voulez-vous vraiment supprimer ce produit?');">
                         <i class="fas fa-trash-alt"></i> Supprimer
                     </a>

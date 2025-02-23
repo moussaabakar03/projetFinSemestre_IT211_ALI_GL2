@@ -23,7 +23,7 @@
     </style>
     <body>
         <div class = "fixed-top" style ="display: flex; justify-content: space-between; margin-top: 20px; margin-left: 20px; margin-right: 20px; background-color: #f0f0f0; padding: 10px; border-radius: 10px;">
-            <a href="{% url 'listeCateg' %}" type="button" class="btn btn-outline-secondary" style = "height: 40px; margin-top: 10px; font-weight: bold;">DashBord </a>
+            <a href="{% url 'dashBord' %}" type="button" class="btn btn-outline-secondary" style = "height: 40px; margin-top: 10px; font-weight: bold;">DashBord </a>
             <a href="{% url 'ajoutProduit' %}" type="button" class="btn btn-outline-secondary" style = "height: 40px; margin-top: 10px; font-weight: bold;">Ajouter produit</a>
             <h3 style = " text-align: center;"> Liste des produits  <span style ="color: red; font-weight : bold;">{{ categorie.nom }}(s)</span></h3>
             <form class="d-flex" role="search" action ="{% url 'listeProduits' %}" method="POST">

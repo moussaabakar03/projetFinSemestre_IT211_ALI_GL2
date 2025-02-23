@@ -3,12 +3,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('statistique', views.statistique, name='statistique'),
-    path('top_produits', views.top_produits, name='top_produits'),
+    path('', views.dashBord, name='dashBord'),
+
     
-    
-    
-    path('', views.listeCategorie, name='listeCateg'),
+    path('listeCateg', views.listeCategorie, name='listeCateg'),
     path('ajoutCateg/', views.ajoutCategorie, name='ajoutCateg'),
     path('suppCatego/<int:id>/', views.supprimerCategorie, name='suppCategorie'),
     path('modifierCategorie/<int:id>/', views.modifierCategorie, name='modifierCategorie'),

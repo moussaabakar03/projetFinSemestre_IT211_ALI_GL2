@@ -22,44 +22,33 @@
             margin-top: 20px;
 
         }
-        :root {
-            --primary-color: #3498db;
-            --secondary-color: #2c3e50;
-            --accent-color: #e74c3c;
-            --light-bg: #f8f9fa;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-        }
+        
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light-bg);
+            background-color: #f8f9fa;
             padding-top: 110px;
         }
         
         .navbar-custom {
             background-color: white;
-            box-shadow: var(--box-shadow);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 15px 20px;
-            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            border-radius: 0 0 8px 8px;
         }
         
         .navbar-brand {
             font-size: 1.5rem;
             font-weight: bold;
-            color: var(--secondary-color);
+            color: #2c3e50;
         }
-        
-        .cart-icon {
-            position: relative;
-        }
+   
         
         .cart-badge {
             position: absolute;
             top: -5px;
             right: -5px;
-            background-color: var(--accent-color);
+            background-color:  #e74c3c;
             color: white;
             border-radius: 50%;
             width: 20px;
@@ -70,31 +59,9 @@
             font-size: 0.7rem;
         }
         
-        .btn-custom-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-            color: white;
-            transition: var(--transition);
-        }
-        
-        .btn-custom-primary:hover {
-            background-color: #2980b9;
-            border-color: #2980b9;
-        }
-        
-        .btn-custom-outline {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            transition: var(--transition);
-        }
-        
-        .btn-custom-outline:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
+       
         .search-form {
-            border-radius: var(--border-radius);
+            border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
@@ -102,42 +69,33 @@
         .search-input {
             border: 1px solid #e0e0e0;
             border-right: none;
-            border-radius: var(--border-radius) 0 0 var(--border-radius);
-            padding: 0.5rem 1rem;
-        }
-        
-        .search-button {
-            border-radius: 0 var(--border-radius) var(--border-radius) 0;
-            background-color: var(--primary-color);
-            border: none;
-            color: white;
+            border-radius: 8px 0 0 8px;
             padding: 0.5rem 1rem;
         }
         
         .alert-custom {
             border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            animation: fadeIn 0.5s ease;
+            box-shadow: 8px;
+            animation: messageAlert 0.5s ease;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes messageAlert {
+            from { 
+                opacity: 0; transform: translateY(-10px); 
+            }
+            to { 
+                opacity: 1; transform: translateY(0); 
+            }
         }
         
-        .card-container {
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            overflow: hidden;
-            background-color: white;
-        }
+      
     </style>
     <body>
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-light fixed-top navbar-custom">
             <div class="container-fluid">
                 <div class="d-flex align-items-center">
-                    <a class="btn btn-outline-secondary" href="{% url 'listeCateg' %}">
+                    <a class="btn btn-outline-secondary" href="{% url 'dashBord' %}">
                         <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                     </a>
                 </div>

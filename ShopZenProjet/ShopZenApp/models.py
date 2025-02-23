@@ -60,17 +60,55 @@ class Achat(models.Model):
         
         if self.quantite is not None:
             self.prixTotal = self.prixUnitaire * self.quantite  # Calculer le prix total
-        super().save(*args, **kwargs) 
+            
+            
+        # achat_existant = Achat.objects.filter(
+        #     produit=self.produit, 
+        #     panierDuClient=self.panierDuClient
+        # ).first()
+
+        # if achat_existant:
+        #     # Si l'achat existe, augmenter la quantité et mettre à jour le prix total
+        #     achat_existant.quantite += self.quantite
+        #     achat_existant.prixTotal = achat_existant.quantite * achat_existant.prixUnitaire
+        #     achat_existant.save()
+        # else:
+        #     # Calcul du prix total pour un nouvel achat
+        #     self.prixTotal = (self.quantite) * self.prixUnitaire
+        super().save(*args, **kwargs)
         
     # Réduire la quantité du produit après achat
         self.reduireQuantiteProduit()
+        
         
     def reduireQuantiteProduit(self):
     #     """ Réduit la quantité du produit acheté du stock disponible. """
         if self.quantite is not None and self.quantite <= self.produit.quantite and self.produit.quantite > 0 and self.quantite > 0:
             self.produit.quantite -= self.quantite
             self.produit.save()
+    
+    def augmenterQuantiteProduitSuppAchat(self):
+        if self.produit:
+            self.produit.quantite += self.quantite
+            self.produit.save()
             
+    def delete(self, *args, **kwargs):
+        self.augmenterQuantiteProduitSuppAchat()
+        super().delete(*args, **kwargs)    
+        
+    def update(self, *args, **kwargs):
+        if self.produit:
+            self.produit.quantite += self.quantite
+            self.produit.save()
+        super().update(*args, **kwargs)
+    
+    # def delete(self, *args, **kwargs):
+    #     # self.augmenterQuantiteProduitSuppAchat()
+    #     if self.produit:
+    #         self.produit.quantite += self.quantite
+    #         self.produit.save()
+    #     super().delete(*args, **kwargs)   
+      
     def __str__(self):
         return self.produit.nom, "quantité: ", self.quantite, "date achat: ", self.dateAchat, "mode payement: ", self.modePayement
     
