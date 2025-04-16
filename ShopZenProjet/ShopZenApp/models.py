@@ -38,7 +38,6 @@ class PanierClient(models.Model):
 class Achat(models.Model):
     MODE_PAIEMENT_CHOICES = [
         ('En spece', 'En spece'),
-        ('carte_credit', 'Carte de crédit'),
         ('tmoney', 'TMoney'),
         ('flooz', 'Flooz')
     ]
@@ -53,39 +52,21 @@ class Achat(models.Model):
         default='En spece'
     )
     prixTotal = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, editable=False)
-    
+
     def save(self, *args, **kwargs):
         if not self.prixUnitaire:  # Vérifier si le prixUnitaire n'est pas encore défini
             self.prixUnitaire = self.produit.prix  # Récupérer le prix du produit
         
         if self.quantite is not None:
             self.prixTotal = self.prixUnitaire * self.quantite  # Calculer le prix total
-            
-            
-        # achat_existant = Achat.objects.filter(
-        #     produit=self.produit, 
-        #     panierDuClient=self.panierDuClient
-        # ).first()
+         
+        # Diminuer la quantité du produit
+        # self.produit.quantite -= self.quantite
+        # self.produit.save()  # Sauvegarder la mise à jour du stock
+        # super().save(*args, **kwargs)
 
-        # if achat_existant:
-        #     # Si l'achat existe, augmenter la quantité et mettre à jour le prix total
-        #     achat_existant.quantite += self.quantite
-        #     achat_existant.prixTotal = achat_existant.quantite * achat_existant.prixUnitaire
-        #     achat_existant.save()
-        # else:
-        #     # Calcul du prix total pour un nouvel achat
-        #     self.prixTotal = (self.quantite) * self.prixUnitaire
         super().save(*args, **kwargs)
-        
-    # Réduire la quantité du produit après achat
-        self.reduireQuantiteProduit()
-        
-        
-    def reduireQuantiteProduit(self):
-    #     """ Réduit la quantité du produit acheté du stock disponible. """
-        if self.quantite is not None and self.quantite <= self.produit.quantite and self.produit.quantite > 0 and self.quantite > 0:
-            self.produit.quantite -= self.quantite
-            self.produit.save()
+    
     
     def augmenterQuantiteProduitSuppAchat(self):
         if self.produit:
@@ -96,11 +77,11 @@ class Achat(models.Model):
         self.augmenterQuantiteProduitSuppAchat()
         super().delete(*args, **kwargs)    
         
-    def update(self, *args, **kwargs):
-        if self.produit:
-            self.produit.quantite += self.quantite
-            self.produit.save()
-        super().update(*args, **kwargs)
+    # def update(self, *args, **kwargs):
+    #     if self.produit:
+    #         self.produit.quantite += self.quantite
+    #         self.produit.save()
+    #     super().update(*args, **kwargs)
     
     # def delete(self, *args, **kwargs):
     #     # self.augmenterQuantiteProduitSuppAchat()

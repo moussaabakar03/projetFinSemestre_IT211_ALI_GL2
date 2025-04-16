@@ -194,36 +194,6 @@
                     }
                 }
 
-                /* Responsive */
-                @media (max-width: 850px) {
-                    .conteneur {
-                        justify-content: center;
-                    }
-                    
-                    .box {
-                        width: 160px;
-                        height: 140px;
-                        margin: 10px;
-                    }
-                    
-                    .nomElement h2 {
-                        font-size: 24px;
-                    }
-                }
-
-                @media (max-width: 500px) {
-                    table {
-                        font-size: 14px;
-                    }
-                    
-                    th, td {
-                        padding: 10px;
-                    }
-                    
-                    h2 {
-                        font-size: 20px;
-                    }
-                }
             </style>
         {% endblock %}
     </head>
@@ -250,6 +220,7 @@
                 </div>
             </div>
         <h2>Top 5 des Produits les Plus Achetés</h2>
+       
         <table border="1">
             <thead>
                 <tr>
@@ -282,8 +253,85 @@
             </tbody>
         </table>
 
+        {% comment %} <h2> le graphe </h2>
+                        
+            <!-- Charger Chart.js -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+            <!-- Passer les données Django dans le HTML de façon sécurisée -->
+            <script id="dates-ventes" type="application/json">{{ date_ventes|safe }}</script>
+            <script id="chiffres-ventes" type="application/json">{{ chiffre_ventes|safe }}</script>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                let canvas = document.getElementById('salesChart');
+
+                // Vérifier si le canvas existe bien dans le DOM
+                if (!canvas) {
+                    console.error("Le canvas 'salesChart' est introuvable !");
+                    return;
+                }
+
+                let ctx = canvas.getContext('2d');
+
+                // Vérifier si un graphique existe déjà et le détruire
+                if (window.salesChart instanceof Chart) {
+                    window.salesChart.destroy();
+                }
+
+                // Récupérer les données passées depuis Django
+                try {
+                    let datesVentes = JSON.parse(document.getElementById("dates-ventes").textContent);
+                    let chiffresVentes = JSON.parse(document.getElementById("chiffres-ventes").textContent);
+
+                    // Vérifier si les données sont bien reçues
+                    console.log("Dates des ventes:", datesVentes);
+                    console.log("Chiffre des ventes:", chiffresVentes);
+
+                    // Vérifier que les tableaux ne sont pas vides
+                    if (!Array.isArray(datesVentes) || datesVentes.length === 0) {
+                        console.warn("Aucune donnée de date trouvée, utilisation de données de test.");
+                        datesVentes = ["24/02/25", "25/02/25", "26/02/25", "27/02/25"];
+                        chiffresVentes = [1200, 1500, 1000, 1800];
+                    }
+
+                    // Création du graphique
+                    window.salesChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: datesVentes,
+                            datasets: [{
+                                label: 'Évolution des ventes',
+                                data: chiffresVentes,
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderWidth: 2,
+                                pointRadius: 5,
+                                pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                                tension: 0.3
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            scales: {
+                                x: { title: { display: true, text: 'Dates', font: { size: 14 } } },
+                                y: { title: { display: true, text: 'Chiffre d\'affaires', font: { size: 14 } }, beginAtZero: true }
+                            },
+                            plugins: {
+                                legend: { display: true, position: 'top' }
+                            }
+                        }
+                    });
+
+                } catch (error) {
+                    console.error("Erreur lors du parsing JSON :", error);
+                }
+            });
+            </script> {% endcomment %}
         {% endblock %}
+ 
 
+        
     </body>
 </html>

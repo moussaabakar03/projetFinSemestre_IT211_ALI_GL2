@@ -1,4 +1,4 @@
-import re
+import re, json
 from django.db.models import Sum, Count
 from django.http import HttpResponse
 from django.contrib import messages
@@ -12,14 +12,27 @@ def dashBord(request):
     total_produit = Produit.objects.count()
     total_achat = Achat.objects.count()
     total_chiffreAffaire = sum(chiffre.prixTotal for chiffre in Achat.objects.all())
-    
+
+    # Correction de la limite
     top_3_produits = Produit.objects.annotate(
         total_achats=Sum('achats__quantite')
     ).filter(total_achats__gt=0).order_by('-total_achats')[:5]
-    
-    context = {'total_categorie': total_categorie, 'total_produit': total_produit, 'total_achat': total_achat, 'total_chiffreAffaire': total_chiffreAffaire, 'top_3_produits': top_3_produits}
-    return render(request, 'dashBord.html', context)
 
+    # Récupération des données pour le graphe
+    # achats = Achat.objects.all().order_by('dateAchat')[:10]
+    # date_ventes = [vente.dateAchat.strftime("%y/%m/%d") for vente in achats]
+    # chiffre_ventes = [vente.prixTotal for vente in achats]
+
+    context = {
+        'total_categorie': total_categorie,
+        'total_produit': total_produit,
+        'total_achat': total_achat,
+        'total_chiffreAffaire': total_chiffreAffaire,
+        'top_3_produits': top_3_produits,
+        # 'date_ventes': date_ventes,  # Pas besoin de `json.dumps()`
+        # 'chiffre_ventes': chiffre_ventes
+    }
+    return render(request, 'dashBord.html', context)
 
 #/categorie/ listeCategorie: URL menant à la page de la liste des categories 
 # def top_produits(request):
@@ -52,7 +65,7 @@ def ajoutCategorie(request):
             image = categorie.cleaned_data['image']
         if not re.search('[a-zA-Z]', noms):  # Vérifie s'il y a au moins une lettre
             messages.error(request, f"Le champ nom ({noms}) ne peut pas contenir uniquement des chiffres.")
-                    # re.search(...) : Fonction du module re (regular expressions) en Python qui cherche un motif dans une chaîne de caractères.
+                # re.search(...) : Fonction du module re (regular expressions) en Python qui cherche un motif dans une chaîne de caractères.
             return redirect("ajoutCateg")
         
         else:
@@ -90,6 +103,7 @@ def modifierCategorie(request, id):
             categorie.description = form.cleaned_data['description']
             categorie.image = form.cleaned_data['image']
             categorie.save()
+            messages.success (request, 'Categorie modifiée avec succès')
             return redirect("listeCateg")  # Redirection après modification
     else:
         # Pré-remplir le formulaire avec les valeurs actuelles de la catégorie
@@ -179,6 +193,16 @@ def ajoutProduit(request):
             else:
                 # 4 Création et sauvegarde d'un produit
                 oProduit1 = Produit(categorie=categories, nom=noms, description=descriptions, image =images, prix=prix, quantite=quantites)
+                
+                produits = Produit.objects.all()
+                if produits:
+                    for produit in produits:
+                        if produit.nom == noms and produit.prix == prix and produit.categorie == categories:
+                            produit.quantite += quantites
+                            produit.save()
+                            messages.success(request, "Le produit a été ajouté avec succès.")
+                            return redirect("listeProduit" , id=categories.id)
+
                 oProduit1.save()
                 messages.success(request, "Produit ajouté avec succès!!!")
                 return redirect("listeProduit" , id=categories.id)
@@ -230,6 +254,7 @@ def modifierProduit(request, id):
             return redirect('listeProduits')
         else:
             produits.save()
+            messages.success (request, 'Produit modifié avec succès')
             return redirect("listeProduits")
     else:
         # Requête GET
@@ -271,6 +296,7 @@ def modifierProduitDiv(request, id):
                 produits.save()
                 # return redirect("ProduitDiv")
                 produits.save()
+                messages.success (request, 'Produit modifié avec succès')
                 return redirect("ProduitDiv")
     else:
         # Requête GET
@@ -302,7 +328,7 @@ def ajoutPannier(request):
             
             oPannier1 = PanierClient(nomClient=nom)
             oPannier1.save()
-            
+            messages.success(request, f"Le pannier crée avec succès")
             return redirect('produitPannier')
     else:
         pannier = PannierClient()
@@ -338,12 +364,37 @@ def ajoutProduitPannier(request, id):
             messages.error(request, "Quantité insuffisante ou invalide")
             return redirect('produitPannier')
         else:
-            oAchat = Achat(produit = produit, panierDuClient = panierDuClient, quantite=quantite, modePayement = modePayement)
             # idProduit.produit = produit
             # idProduit.panierDuClient = panierDuClient
-            produits.quantite = quantite
+            # produits.quantite = quantite
             # produits.modePayement = modePayement
             
+            if quantite is not None and quantite <= produits.quantite and produits.quantite > 0 and quantite > 0:
+                produits.quantite -= quantite
+            produits.save()
+                # oAchat.save()
+            
+            achats = Achat.objects.filter(panierDuClient = panierDuClient)
+            if achats:
+                for achat in achats:
+                    if achat.produit == produit:
+                        achat.quantite += quantite
+                        achat.save()
+                        messages.success(request, f"{quantite} {produit} ajouté (es) avec succès au pannier N°{panierDuClient}")
+                        return redirect('produitPannier')
+            
+                    #Même chose qu'haut!!!
+                    
+            # achats = Achat.objects.all()
+            # if achats:
+            #     for achat in achats:
+            #         if achat.panierDuClient == panierDuClient and achat.produit == produit:
+            #             achat.quantite += quantite
+            #             achat.save()
+            #             messages.success(request, f"{quantite} {produit} ajouté (es) avec succès au pannier N°{panierDuClient}")
+            #             return redirect('produitPannier')
+                    
+            oAchat = Achat(produit = produit, panierDuClient = panierDuClient, quantite=quantite, modePayement = modePayement)
             oAchat.save()
             messages.success(request, f"{quantite} {produit} ajouté (es) avec succès au pannier N°{panierDuClient}")
             return redirect('produitPannier')
@@ -353,22 +404,37 @@ def ajoutProduitPannier(request, id):
         oFormAchat = formAchat(initial={'produit': id, 'panierDuClient': dernier_panier, 'quantite': produits.quantite,})
     
     return render(request, 'pannier/ajouterProduitPannier.html', {'oFormAchat': oFormAchat, 'id': id})
-            
-            
+      
+
 def listeAchat(request):
-    if request.method == "POST":
-        id_pannier = request.POST.get("idPannier").strip() # Supprime les espaces avant et après, pour éviter des erreurs.
+    pannier = PanierClient.objects.all().order_by('-id')
+    return render(request, 'achat/listeAchat.html', {'achat': pannier})
+        
+            
+def achatDetail(request, id):
+    # if request.method == "POST":
+    #     id_pannier = request.POST.get("idPannier").strip() # Supprime les espaces avant et après, pour éviter des erreurs.
 
-        if id_pannier.isdigit():  # Vérifier si c'est un nombre valide
-            achats = Achat.objects.filter(panierDuClient=id_pannier).order_by('-id')
-        else:
-            achats = Achat.objects.all().order_by('-id')
+    #     if id_pannier.isdigit():  # Vérifier si c'est un nombre valide
+    #         achats = Achat.objects.filter(panierDuClient=id_pannier).order_by('-id')
+    #     else:
+    #         achats = Achat.objects.all().order_by('-id')
 
-        return render(request, 'achat/listeAchat.html', {'achat': achats})
+    #     return render(request, 'achat/listeAchat.html', {'achat': achats})
+    
+    
+    # On peut ne pas utilisé
+    pannier = get_object_or_404(PanierClient, id=id) # Récupère le panier depuis la base de données id == id
+        
+    detailAchat = Achat.objects.filter(panierDuClient=id) # on peut aussi directement ecrire comme ça;
+    # detailAchat = Achat.objects.filter(panierDuClient=pannier)   on peut ecrire comme ça;
+    
+    # detailAchat = Achat.objects.get(id =id)
+    return render(request, 'achat/detailPannier.html', {'detailAchat': detailAchat})
     
     # Si ce n'est pas un POST, afficher toutes les données
-    achats = Achat.objects.all().order_by('-id')
-    return render(request, 'achat/listeAchat.html', {'achat': achats})
+    # achats = Achat.objects.all().order_by('-id')
+    # return render(request, 'achat/listeAchat.html', {'achat': detailAchat})
 
 
 def divListeAchat(request):
@@ -387,21 +453,7 @@ def divListeAchat(request):
     return render(request, 'achat/divListeAchat.html', {'achat': achats})
 
 
-# def listeAchat(request):
-#     if request.method == "POST":
-#         idPaniers = request.POST.get("idPannier")
-#         if idPaniers.isdigit():
-#             achats = Achat.objects.all().order_by('id')
-#             achat = achats.filter(panierDuClient = idPaniers)
-#             context = {'achat': achat}
-#             return render(request, 'achat/listeAchat.html', context)
-#         else:
-#             achats = Achat.objects.all().order_by('id')
-#     else:
-#         achats = Achat.objects.all().order_by('id')
-#     return render(request, 'achat/listeAchat.html',  {'achat': achats})
-
-
+#Méthode permettant de modifier un achat au pannier
 def modifierAchat(request, id):
     # Requête GET
     achat = Achat.objects.get(id=id)
@@ -418,6 +470,7 @@ def modifierAchat(request, id):
             achat.modePayement = achatForms.cleaned_data['modePayement']
             
             achat.save()
+            messages.success (request, 'Achat modifié avec succès')
             return redirect("listeAchat")
     else:
         # Requête GET
@@ -435,20 +488,6 @@ def supprimerAchat(request, id):
     idAchat = Achat.objects.get(id=id)
     idAchat.delete()
     return redirect("listeAchat")
-
-
-#Méthode permettant de modifier un achat au pannier
-def modifierAchat(request, id):
-    # Requête GET
-    idAchat = Achat.objects.get(id=id)
-    #1 Récuperer les données
-    if request.method == "POST":
-        formulaireAchat = formAchat(request.POST)
-        #2 Validé les données
-        if formulaireAchat.is_valid():
-        #3 Preparation des données  
-            quantite = formulaireAchat.cleaned_data['quantite']
-  
 
 def idClientFacture(request):
     dernier_panier = PanierClient.objects.order_by('-id').first()
@@ -468,4 +507,9 @@ def imprimerFactures(request, id):
     total= sum(achat.prixTotal for achat in panniers)
     return render(request, 'facture/imprimerFacture.html', {'panniers': panniers, 'prixTotal': total, 'idPannier': id})
 
-
+def factureAutoPanier(request, id):
+    panier = get_object_or_404(PanierClient, id=id)
+    print(f"Facture pour panier ID : {panier.id}")
+    panniers = Achat.objects.filter(pannier=id)
+    total = sum(achat.prixTotal for achat in panniers)
+    return render(request, 'facture/imprimerFacture.html', {'panniers': panniers, 'prixTotal': total, 'idPannier': panier})

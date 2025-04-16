@@ -9,9 +9,8 @@
         <style>
             .tableau{
                 margin-top : 20px;
-                widht: 50%;
             }
-            th, tr, td {
+            th {
                 text-align: center;
                 {% comment %} border : 1px solid black; {% endcomment %}
     
@@ -67,10 +66,17 @@
                 <p style = "color: white;">.</p>
             </div>
             <div class="toggle-buttons" style = "">
-                <a href = "{% url 'divListeAchat' %}" type = "button" class="btn btn-outline-secondary"><i class="fa-solid fa-th-large optionAffichage" title = "Par Div"></i> </a>
-                <a href = "{% url 'listeAchat' %}" type = "button" class="btn btn-outline-secondary"><i class="fa-solid fa-table optionAffichage" title = "Par tableau"></i></a>
+                <a href = "{% url 'listeAchat' %}" type = "button" class="btn btn-outline-secondary"> Liste des panniers</a>
             </div>
-            <a href="{% url 'idClientFacture'%}" class='btn btn-warning btn-sm'><i class="fas fa-print"></i>Generer Facture</a>
+            <div class="toggle-buttons" style = "">
+                {% if idPannier %}
+                    <a href="{% url 'factureAutoPanier' idPannier.id %}" class='btn btn-warning btn-sm'>
+                        <i class="fas fa-print"></i> Générer Facture
+                    </a>
+                {% else %}
+                    <p class="text-danger">Aucun panier trouvé.</p>
+                {% endif %}
+            </div>
         </div>
         {% if messages %}
             <div class="container mt-4">
@@ -87,26 +93,33 @@
             <thead>
                 <tr>
                     <th scope="col">ID</th>
-                    {% comment %} <th scope="col">Voir plus</th> {% endcomment %}
-                    <th scope="col">Nom du client</th>
+                    <th scope="col">Quantite</th>
+                    <th scope="col">Prix unitaire</th>
+                    <th scope="col">Date d'achat </th>
+                    <th scope="col">Mode de payement</th>
+                    <th scope="col">Numero du Panier - nom du client</th>
+                    <th scope="col">Produit</th>
+                    <th scope="col">Prix Total</th>
                     <th scope="col">Action</th>
                 </tr>
-                </thead>
-                <tbody> 
+            </thead>
+            <tbody> 
                 
-                    {% for achat in achat %}
+                    {% for achat in detailAchat %}
                 
                 <tr>
                     <td>{{ achat.id }}</td>
-                    {% if achat.nomClient %}
-                        <td>{{ achat.nomClient }}</td>
-                    {% else %}
-                        <td>Non renseigné</td>
-                    {% endif %}
+                    <td>{{ achat.nomClient }}</td>
+                    <td>{{ achat.prixUnitaire }}</td>
+                    <td>{{ achat.dateAchat }}</td>
+                    <td>{{ achat.modePayement }}</td>
+                    <td>{{ achat.panierDuClient }}</td>
+                    <td>{{ achat.produit_id }}- {{ achat.produit}}</td>
+                    <td>{{ achat.prixTotal }}</td>
                     <td>
-                        <div style = "display: flex; justify-content: space-between;" >
-                            <a href="{% url 'achatDetail' achat.id %}" class='w-25 btn btn-lg btn-outline-primary btn-sm'><i class="fa fa-eye"></i></a>
-                            <a href = "{% url 'supprimerAchat' achat.id %}" type="button" class="w-25 btn btn-outline-danger" role = "Button" onclick ="return confirm ('Voulez-vous vraiment supprimer ce produit?');" > <i class="fas fa-trash-alt"></i></a>
+                        <div style = "display: flex; justify-content: space-between; gap: 10px;" >
+                            <a href = "{% url 'modifierAchat' achat.id %}" type="button" class="btn btn-outline-warning"><i class="fas fa-edit"></i></a>
+                            <a href = "{% url 'supprimerAchat' achat.id %}" type="button" class="btn btn-outline-danger" role = "Button" onclick ="return confirm ('Voulez-vous vraiment supprimer ce produit?');" > <i class="fas fa-trash-alt"></i></a>
                         </div>
                     </td>
                 </tr>
