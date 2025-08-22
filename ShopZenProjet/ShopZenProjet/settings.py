@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-0pbzxnw)ac+xq(fqs3^ow=p(vvdjp*vp^fbx^xkh$q1)-pdx0@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -75,16 +77,19 @@ WSGI_APPLICATION = 'ShopZenProjet.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ShopZen',
-        'USER': 'postgres',
-        'PASSWORD' : 'Moussa68444436@',
-        'HOST': 'localhost',
-        'PORT': '5432'
-    }
+    'default': dj_database_url.config(
+        default='postgresql://shopzen_b12l_user:IlHEYP3JbMGvZK5gUgUMuXQvROxh6gqV@dpg-d2ka2vqli9vc73e4ef3g-a.oregon-postgres.render.com/shopzen_b12l'
+    )
 }
 
+#  {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'ShopZen',
+#         'USER': 'postgres',
+#         'PASSWORD' : 'Moussa68444436@',
+#         'HOST': 'localhost',
+#         'PORT': '5432'
+#     }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
